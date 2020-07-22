@@ -10,64 +10,55 @@ from picamera import PiCamera
 
 camera = PiCamera()
 camera.resolution = (640, 480)
-rawCapture = PiRGBArray(camera, size = (640, 480))
+rawCapture = PiRGBArray(camera, size=(640, 480))
 # allow the camera to warmup
 time.sleep(0.1)
 
-lowerRange = np.array([121, 70, 68]) # B G R
+lowerRange = np.array([121, 70, 68])  # B G R
 upperRange = np.array([255, 255, 255])
 
-xPos = 0 
+xPos = 0
 yPos = 0
 
 pwm = PCA9685(0x40)
 pwm.setPWMFreq(50)
 
+
 def nothing(x):
     pass
 
+
 def getContours(img):
-    img, contours, hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-    x,y,w,h = 0,0,0,0
+    img, contours, hierarchy = cv2.findContours(
+        img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    x, y, w, h = 0, 0, 0, 0
     for countour in contours:
         area = cv2.contourArea(countour)
-        if area>300:
-            #cv2.drawContours(imgResult, countour, -1, (255, 0, 0), 3)
-            peri = cv2.arcLength(countour,True)
-            approx = cv2.approxPolyDP(countour,0.02*peri,True)
+        if area > 300:
+            # cv2.drawContours(imgResult, countour, -1, (255, 0, 0), 3)
+            peri = cv2.arcLength(countour, True)
+            approx = cv2.approxPolyDP(countour, 0.02*peri, True)
             x, y, w, h = cv2.boundingRect(approx)
     return x+w//2, y
 
-def changeColor():
-    lowerRange[0] = cv2.getTrackbarPos("BLUE Min", "Color Picker")
-    lowerRange[1] = cv2.getTrackbarPos("GREEN Min", "Color Picker")
-    lowerRange[2] = cv2.getTrackbarPos("RED Min", "Color Picker")
-    upperRange[0] = cv2.getTrackbarPos("BLUE Max", "Color Picker")
-    upperRange[1] = cv2.getTrackbarPos("GREEN Max", "Color Picker")
-    upperRange[2] = cv2.getTrackbarPos("RED Max", "Color Picker")
+# detection
 
-# color picking
-cv2.namedWindow("Color Picker")
-cv2.resizeWindow("Color Picker", 600, 300)
-cv2.createTrackbar("RED Min", "Color Picker", 0, 255, nothing)
-cv2.createTrackbar("RED Max", "Color Picker", 255, 255, nothing)
-cv2.createTrackbar("GREEN Min", "Color Picker", 0, 255, nothing)
-cv2.createTrackbar("GREEN Max", "Color Picker", 255, 255, nothing)
-cv2.createTrackbar("BLUE Min", "Color Picker", 0, 255, nothing)
-cv2.createTrackbar("BLUE Max", "Color Picker", 255, 255, nothing)
 
-#detection
 interrupted = False
+
 
 def signal_handler(signal, frame):
     global interrupted
     interrupted = True
 
+
 def interrupt_callback():
     global interrupted
     return interrupted
 
+
 def pickItUp():
+    print("picking...")
     # allow the camera to warmup
     time.sleep(0.1)
     # grab an image from the camera
@@ -85,18 +76,21 @@ def pickItUp():
     pwm.setServoPulse(15, -1.7*xPos+2100)
     time.sleep(1)
     for x in range(200):
-        pwm.setServoPulse(13,1600+x) #down
-        pwm.setServoPulse(14,1500+x*3) 
+        pwm.setServoPulse(13, 1600+x)  # down
+        pwm.setServoPulse(14, 1500+x*3)
         time.sleep(0.02)
-    pwm.setServoPulse(12,1300) #close
+    pwm.setServoPulse(12, 1300)  # close
     time.sleep(1)
-    pwm.setServoPulse(13,1800) #up
-    pwm.setServoPulse(14,1200)
-    pwm.setServoPulse(15,1750)
+    pwm.setServoPulse(13, 1800)  # up
+    pwm.setServoPulse(14, 1200)
+    pwm.setServoPulse(15, 1750)
     rawCapture.truncate(0)
 
+
 def dropIt():
+    print("dropping")
     pwm.setServoPulse(12, 2000)
+
 
 models = ['pickItUp.pmdl', 'dropIt.pmdl']
 
@@ -109,7 +103,7 @@ callbacks = [lambda: pickItUp(),
              lambda: dropIt()]
 print('Listening... Press Ctrl+C to exit')
 
-#hotword detection
+# hotword detection
 detector.start(detected_callback=callbacks,
                interrupt_check=interrupt_callback,
                sleep_time=0.03)
