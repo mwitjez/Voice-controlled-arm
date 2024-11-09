@@ -4,6 +4,7 @@
 ## Project Overview
 
 This project involves designing and constructing a robotic arm controlled via voice commands, utilizing Amazon Alexa for voice recognition. It explores key areas in robotics, including mechanical arm construction, voice control systems, and integration with various electronic components for seamless functionality. The goal is to create an intuitive robotic interface that allows users to interact naturally with the robot through simple commands.
+
 <img src="robot_arm.PNG"/>
 
 ## Table of Contents
