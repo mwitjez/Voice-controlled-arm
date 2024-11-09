@@ -1,0 +1,24 @@
+{
+    "Header": {
+        "Comment": "All values are metric (mm)",
+        "CreationDate": "2021-10-08T11:13:55Z",
+        "GenerationSoftware": {
+            "Application": "EAGLE",
+            "Vendor": "Autodesk",
+            "Version": "9.6.2"
+        },
+        "Part": "Single"
+    },
+    "Overall": {
+        "BoardThickness": 1.57,
+        "LayerNumber": 2,
+        "Name": {
+            "ProjectId": "PCB"
+        },
+        "Owner": "Mateusz Witka-Jeewski <m.w.jezewski@gmail.com>",
+        "Size": {
+            "X": 95.23,
+            "Y": 68.25
+        }
+    }
+}

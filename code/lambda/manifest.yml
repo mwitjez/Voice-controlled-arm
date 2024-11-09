@@ -1,0 +1,9 @@
+functions:
+  # Name the zip file you want juni to create
+  lambda_function:
+    image: lambci/lambda:build-python3.8 # The dependencies of the lambda_function function.
+    requirements: ./src/requirements.txt
+    # Include this file in the generated zip artifact.
+    include:
+      - ./src/lambda_function.py
+      - ./src/certs
